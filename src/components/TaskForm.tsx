@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { createTask } from '../services/taskService';
 import { Task } from '../types';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 
 const TaskForm: React.FC = () => {
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const history = useHistory();
+  // const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,14 +16,13 @@ const TaskForm: React.FC = () => {
     setError(null);
 
     try {
-      const newTask: Task = {
+      const newTask = {
         name: taskName,
         description: taskDescription,
       };
-
       await createTask(newTask);
       setLoading(false);
-      history.push('/dashboard');
+      // Redirecionamento pode ser feito por navegação externa se necessário
     } catch (err) {
       setLoading(false);
       setError('Failed to create task. Please try again.');

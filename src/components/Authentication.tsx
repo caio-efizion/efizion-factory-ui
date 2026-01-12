@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import { authenticate } from '../services/apiService';
 
 const Authentication: React.FC = () => {
   const [apiKey, setApiKey] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const history = useHistory();
+  // const history = useHistory();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setApiKey(event.target.value);
@@ -19,9 +19,7 @@ const Authentication: React.FC = () => {
 
     try {
       const isAuthenticated = await authenticate(apiKey);
-      if (isAuthenticated) {
-        history.push('/dashboard');
-      } else {
+      if (!isAuthenticated) {
         setError('Invalid API Key. Please try again.');
       }
     } catch (err) {

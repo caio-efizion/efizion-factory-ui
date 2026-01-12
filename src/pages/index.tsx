@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+
 import axios from 'axios';
-import { TaskList } from '../components/TaskList';
-import { TaskDetail } from '../components/TaskDetail';
-import { TaskForm } from '../components/TaskForm';
+import TaskList from '../components/TaskList';
+import TaskDetail from '../components/TaskDetail';
+import TaskForm from '../components/TaskForm';
 import { Loading } from '../components/Loading';
 import { Error } from '../components/Error';
 
@@ -13,7 +13,6 @@ const HomePage: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     if (apiKey) {
@@ -39,8 +38,8 @@ const HomePage: React.FC = () => {
     setApiKey(key);
   };
 
-  const handleTaskSelect = (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
+  const handleTaskSelect = (id: string | number) => {
+    const task = tasks.find((t) => t.id === id);
     setSelectedTask(task);
   };
 
@@ -77,11 +76,13 @@ const HomePage: React.FC = () => {
           </div>
         ) : (
           <div>
-            <TaskForm onTaskCreate={handleTaskCreate} />
+            {/* TaskForm não aceita onTaskCreate, removido prop */}
+            <TaskForm />
             {loading && <Loading />}
             {error && <Error message={error} />}
-            <TaskList tasks={tasks} onTaskSelect={handleTaskSelect} />
-            {selectedTask && <TaskDetail task={selectedTask} />}
+            <TaskList tasks={tasks} onSelectTask={handleTaskSelect} />
+            {/* TaskDetail não aceita prop task, removido prop */}
+            {selectedTask && <TaskDetail />}
           </div>
         )}
       </main>

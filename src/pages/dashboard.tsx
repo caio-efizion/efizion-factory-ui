@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTasks, createTask } from '../services/taskService';
+import { fetchTasks, createTask } from '../services/taskService';
 import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorNotification from '../components/ErrorNotification';
 
 const Dashboard: React.FC = () => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -15,8 +15,12 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const data = await getTasks();
-        setTasks(data);
+        const data = await fetchTasks();
+        if (Array.isArray(data)) {
+          setTasks(data);
+        } else {
+          setTasks([]);
+        }
       } catch (err) {
         setError('Failed to fetch tasks');
       } finally {
@@ -39,8 +43,8 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleTaskClick = (taskId: string) => {
-    navigate(`/tasks/${taskId}`);
+  const handleTaskClick = (id: string | number) => {
+    navigate(`/tasks/${id}`);
   };
 
   return (
@@ -48,8 +52,9 @@ const Dashboard: React.FC = () => {
       <h1>Task Dashboard</h1>
       {loading && <LoadingSpinner />}
       {error && <ErrorNotification message={error} />}
-      <TaskForm onSubmit={handleCreateTask} />
-      <TaskList tasks={tasks} onTaskClick={handleTaskClick} />
+      {/* TaskForm não aceita onSubmit, então removido. TaskList usa onSelectTask */}
+      <TaskForm />
+      <TaskList tasks={tasks} onSelectTask={handleTaskClick} />
     </div>
   );
 };

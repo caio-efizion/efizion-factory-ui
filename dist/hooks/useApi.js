@@ -17,7 +17,12 @@ const useApi = (endpoint, options) => {
             setData(result);
         }
         catch (err) {
-            setError(err.message);
+            if (err instanceof Error) {
+                setError(err.message);
+            }
+            else {
+                setError('Unknown error');
+            }
         }
         finally {
             setLoading(false);

@@ -14,6 +14,11 @@ const TaskDetail: React.FC = () => {
 
   useEffect(() => {
     const loadTaskDetail = async () => {
+      if (!taskId) {
+        setError('No task ID provided.');
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
         const taskDetail = await fetchTaskDetail(taskId);
@@ -48,8 +53,7 @@ const TaskDetail: React.FC = () => {
       <div className="task-info">
         <h2>{task.name}</h2>
         <p>Status: {task.status}</p>
-        <p>Created At: {new Date(task.createdAt).toLocaleString()}</p>
-        <p>Updated At: {new Date(task.updatedAt).toLocaleString()}</p>
+        {/* Campos de data removidos pois não existem no tipo Task */}
       </div>
       <div className="task-logs">
         <h3>Logs</h3>

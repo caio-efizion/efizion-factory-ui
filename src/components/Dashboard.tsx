@@ -5,7 +5,7 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorNotification from './ErrorNotification';
 
 const Dashboard: React.FC = () => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

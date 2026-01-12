@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { TaskDetail, TaskLog } from '../../components/TaskComponents';
 import { API_BASE_URL } from '../../config';
 import { useAuth } from '../../hooks/useAuth';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ErrorMessage from '../../components/ErrorMessage';
 
 const TaskDetailPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
   const { apiKey } = useAuth();
-  const [task, setTask] = useState(null);
-  const [logs, setLogs] = useState([]);
+  const { id } = useParams<{ id: string }>();
+  const [task, setTask] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id || !apiKey) return;
-
     const fetchTaskDetails = async () => {
       try {
         setLoading(true);
@@ -26,51 +24,23 @@ const TaskDetailPage = () => {
           },
         });
         setTask(response.data);
-        setLoading(false);
       } catch (err) {
-        setError('Failed to fetch task details.');
+        setError('Failed to load task details.');
+      } finally {
         setLoading(false);
       }
     };
-
-    const fetchTaskLogs = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/tasks/${id}/logs`, {
-          headers: {
-            'x-api-key': apiKey,
-          },
-        });
-        setLogs(response.data);
-      } catch (err) {
-        setError('Failed to fetch task logs.');
-      }
-    };
-
     fetchTaskDetails();
-    fetchTaskLogs();
   }, [id, apiKey]);
 
-  if (loading) return <div>Loading task details...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage message={error} />;
+  if (!task) return <div>No task found.</div>;
 
   return (
     <div className="task-detail-page">
-      {task && (
-        <TaskDetail
-          id={task.id}
-          name={task.name}
-          status={task.status}
-          description={task.description}
-          createdAt={task.createdAt}
-          updatedAt={task.updatedAt}
-        />
-      )}
-      <h2>Task Logs</h2>
-      {logs.length > 0 ? (
-        logs.map((log, index) => <TaskLog key={index} log={log} />)
-      ) : (
-        <div>No logs available for this task.</div>
-      )}
+      <h1>Task Details</h1>
+      <pre>{JSON.stringify(task, null, 2)}</pre>
     </div>
   );
 };
