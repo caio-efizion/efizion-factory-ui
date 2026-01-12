@@ -6,9 +6,10 @@ interface ApiResponse<T> {
   loading: boolean;
 }
 
+
 interface RequestOptions {
   method: string;
-  headers: HeadersInit;
+  headers?: HeadersInit;
   body?: string;
 }
 
@@ -22,7 +23,12 @@ const useApi = <T,>(endpoint: string, options: RequestOptions): ApiResponse<T> =
     setError(null);
 
     try {
-      const response = await fetch(endpoint, options);
+      const apiKey = localStorage.getItem('efizion_api_key');
+      const headers: HeadersInit = {
+        ...(options.headers || {}),
+        'x-api-key': apiKey || '',
+      };
+      const response = await fetch(endpoint, { ...options, headers });
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }

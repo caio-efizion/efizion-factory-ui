@@ -141,7 +141,7 @@
     }
   },
   "appDir": "/root/efizion-factory/efizion-factory-ui",
-  "relativeAppDir": "",
+  "relativeAppDir": "efizion-factory-ui",
   "files": [
     ".next/routes-manifest.json",
     ".next/server/pages-manifest.json",
