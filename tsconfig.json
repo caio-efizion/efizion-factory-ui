@@ -1,33 +1,31 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
+    "module": "esnext",
     "lib": [
       "ES2022",
       "DOM"
     ],
-    "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "declaration": true,
-    "sourceMap": true,
-    "jsx": "react-jsx"
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "incremental": true,
+    "isolatedModules": true
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.js",
-    "src/**/*.jsx",
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx"
+    "next-env.d.ts",
+    "pages/**/*",
+    "types/**/*",
+    "public/**/*",
+    "src/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "dist"
+    "node_modules"
   ]
 }
