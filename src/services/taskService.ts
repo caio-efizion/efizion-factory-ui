@@ -1,35 +1,70 @@
-import axios from 'axios';
+import apiClient from './apiService';
+import { Task, CreateTaskPayload, UpdateTaskPayload } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.efizion-factory.com';
+/**
+ * Serviço de gerenciamento de tarefas
+ * Todas as funções retornam Promises e podem lançar erros
+ */
 
-export const fetchTasks = async () => {
-  const apiKey = localStorage.getItem('efizion_api_key') || '';
-  const response = await axios.get(`${API_BASE_URL}/tasks`, {
-    headers: { 'x-api-key': apiKey },
-  });
+/**
+ * Busca todas as tarefas
+ */
+export const getTasks = async (): Promise<Task[]> => {
+  const response = await apiClient.get<Task[]>('/tasks');
   return Array.isArray(response.data) ? response.data : [];
 };
 
-export const createTask = async (taskData: any) => {
-  const apiKey = localStorage.getItem('efizion_api_key') || '';
-  const response = await axios.post(`${API_BASE_URL}/tasks`, taskData, {
-    headers: { 'x-api-key': apiKey },
-  });
+/**
+ * Busca os detalhes de uma tarefa específica
+ */
+export const getTaskById = async (taskId: number): Promise<Task> => {
+  const response = await apiClient.get<Task>(`/tasks/${taskId}`);
   return response.data;
 };
 
-export const fetchTaskDetail = async (taskId: string) => {
-  const apiKey = localStorage.getItem('efizion_api_key') || '';
-  const response = await axios.get(`${API_BASE_URL}/tasks/${taskId}`, {
-    headers: { 'x-api-key': apiKey },
-  });
+/**
+ * Cria uma nova tarefa
+ */
+export const createTask = async (taskData: CreateTaskPayload): Promise<Task> => {
+  const response = await apiClient.post<Task>('/tasks', taskData);
   return response.data;
 };
 
-export const fetchTaskLogs = async (taskId: string) => {
-  const apiKey = localStorage.getItem('efizion_api_key') || '';
-  const response = await axios.get(`${API_BASE_URL}/tasks/${taskId}/logs`, {
-    headers: { 'x-api-key': apiKey },
-  });
+/**
+ * Atualiza uma tarefa existente
+ */
+export const updateTask = async (
+  taskId: number,
+  taskData: UpdateTaskPayload
+): Promise<Task> => {
+  const response = await apiClient.patch<Task>(`/tasks/${taskId}`, taskData);
   return response.data;
 };
+
+/**
+ * Exclui uma tarefa
+ */
+export const deleteTask = async (taskId: number): Promise<void> => {
+  await apiClient.delete(`/tasks/${taskId}`);
+};
+
+/**
+ * Busca os logs de uma tarefa
+ */
+export const getTaskLogs = async (taskId: number): Promise<string[]> => {
+  const response = await apiClient.get<string[]>(`/tasks/${taskId}/logs`);
+  return Array.isArray(response.data) ? response.data : [];
+};
+
+/**
+ * Executa uma tarefa
+ */
+export const runTask = async (taskId: number): Promise<Task> => {
+  const response = await apiClient.post<Task>(`/tasks/${taskId}/run`);
+  return response.data;
+};
+
+// Manter compatibilidade com código legado
+export const fetchTasks = getTasks;
+export const fetchTaskDetail = (taskId: string) => getTaskById(parseInt(taskId));
+export const fetchTaskLogs = (taskId: string) => getTaskLogs(parseInt(taskId));
