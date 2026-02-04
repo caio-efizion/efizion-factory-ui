@@ -14,28 +14,13 @@ const nextConfig = {
     minimumCacheTTL: 60, // Cache de 60 segundos
   },
   
-  // Webpack Optimizations
-  webpack: (config, { dev, isServer }) => {
-    // Otimizar bundle em produção
-    if (!dev && !isServer) {
-      // Tree shaking e code splitting
-      config.optimization = {
-        ...config.optimization,
-        usedExports: true,
-        sideEffects: false,
-      };
-    }
-    
-    return config;
+  // Turbopack config (Next.js 16+ padrão)
+  turbopack: {
+    // Configuração vazia para aceitar Turbopack como padrão
   },
   
-  // SWC Minification (mais rápido que Terser)
-  swcMinify: true,
-  
-  // Experimental Features para Performance
+  // Experimental Features
   experimental: {
-    // Otimizar fontes
-    optimizeFonts: true,
     // Lazy load de módulos
     esmExternals: true,
   },
