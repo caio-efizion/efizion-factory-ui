@@ -56,7 +56,7 @@ function DashboardContent() {
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Grid container spacing={3}>
         {/* Cards de status */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Tarefas</Typography>
@@ -64,7 +64,7 @@ function DashboardContent() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Jobs Ativos</Typography>
@@ -72,7 +72,7 @@ function DashboardContent() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Sucesso</Typography>
@@ -80,7 +80,7 @@ function DashboardContent() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Falha</Typography>
@@ -89,7 +89,7 @@ function DashboardContent() {
           </Card>
         </Grid>
         {/* Gráfico de pizza: tarefas por status */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Tarefas por Status</Typography>
@@ -108,7 +108,7 @@ function DashboardContent() {
           </Card>
         </Grid>
         {/* Gráfico de barras: performance dos jobs */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Performance dos Jobs</Typography>
@@ -125,7 +125,7 @@ function DashboardContent() {
           </Card>
         </Grid>
         {/* Card de agentes online */}
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card>
             <CardContent>
               <Typography variant="h6">Agentes Online</Typography>
@@ -134,7 +134,7 @@ function DashboardContent() {
           </Card>
         </Grid>
         {/* Filtros e ações */}
-        <Grid item xs={12} md={9}>
+        <Grid size={{ xs: 12, md: 9 }}>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 2 }}>
             <Button variant="contained">Filtrar por período</Button>
             <Button variant="outlined">Filtrar por status</Button>

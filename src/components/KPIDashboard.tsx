@@ -19,7 +19,7 @@ export default function KPIDashboard({ kpis }: { kpis: KPIs }) {
     <Box sx={{ mb: 4 }}>
       <Typography variant="h5" sx={{ mb: 2, color: '#1976d2' }}>Painel de KPIs</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
           <Card sx={{ bgcolor: '#e3f2fd' }}>
             <CardContent>
               <Typography variant="h6">Projetos</Typography>
@@ -27,7 +27,7 @@ export default function KPIDashboard({ kpis }: { kpis: KPIs }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
           <Card sx={{ bgcolor: '#c8e6c9' }}>
             <CardContent>
               <Typography variant="h6">Ativos</Typography>
@@ -35,7 +35,7 @@ export default function KPIDashboard({ kpis }: { kpis: KPIs }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
           <Card sx={{ bgcolor: '#fff9c4' }}>
             <CardContent>
               <Typography variant="h6">Jobs</Typography>
@@ -43,7 +43,7 @@ export default function KPIDashboard({ kpis }: { kpis: KPIs }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
           <Card sx={{ bgcolor: '#b2dfdb' }}>
             <CardContent>
               <Typography variant="h6">Sucesso</Typography>
@@ -51,7 +51,7 @@ export default function KPIDashboard({ kpis }: { kpis: KPIs }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
           <Card sx={{ bgcolor: '#ffcdd2' }}>
             <CardContent>
               <Typography variant="h6">Falhas</Typography>
@@ -59,7 +59,7 @@ export default function KPIDashboard({ kpis }: { kpis: KPIs }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
           <Card sx={{ bgcolor: '#d1c4e9' }}>
             <CardContent>
               <Typography variant="h6">Agentes Ativos</Typography>
