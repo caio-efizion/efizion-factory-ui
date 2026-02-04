@@ -102,7 +102,9 @@ const HomePage: React.FC = () => {
       setLogsLoading(true);
       try {
         const logData = await fetchTaskLogs(String(id));
-        setLogs(logData.logs || []);
+        // logData pode retornar { logs: string[] } ou array direto
+        const logsArray = Array.isArray(logData) ? logData : (logData?.logs || []);
+        setLogs(logsArray);
       } catch (err) {
         setLogsError('Erro ao carregar logs.');
       } finally {
@@ -215,7 +217,7 @@ const HomePage: React.FC = () => {
                 </div>
               )}
             </div>
-            <OnboardingTour step={onboardingStep} onNext={() => setOnboardingStep(onboardingStep + 1)} onClose={() => setOnboardingStep(steps.length - 1)} />
+            <OnboardingTour step={onboardingStep} onNext={() => setOnboardingStep(onboardingStep + 1)} onClose={() => setOnboardingStep(5)} />
           </>
         )}
       </main>

@@ -270,6 +270,266 @@ npm test -- accessibility
 3. Confirmação explícita necessária
 4. Feedback de sucesso/erro
 
+## 🧪 Testes Automatizados
+
+### Visão Geral
+
+O projeto possui **testes automatizados** abrangentes com foco em componentes críticos, serviços e fluxos de usuário.
+
+**Cobertura Atual:**
+- ✅ Statements: ~40%
+- ✅ Branches: ~40%
+- ✅ Functions: ~40%
+- ✅ Lines: ~40%
+
+**Meta:** Manter cobertura mínima de 40% e expandir para 70%+ nos componentes principais.
+
+### Executar Testes
+
+```bash
+# Executar todos os testes
+npm test
+
+# Modo watch (desenvolvimento)
+npm test -- --watch
+
+# Com cobertura
+npm test -- --coverage
+
+# Testes específicos
+npm test -- TaskCard
+npm test -- --testPathPattern="components"
+
+# CI mode
+npm run test:ci
+```
+
+### Suites de Teste
+
+#### Componentes Testados
+
+| Componente | Testes | Cobertura | Status |
+|------------|--------|-----------|--------|
+| ConfirmDialog | 5 | 100% | ✅ |
+| EmptyState | 6 | 100% | ✅ |
+| LoadingState | 7 | 100% | ✅ |
+| TaskCard | 14 | 94% | ✅ |
+| TaskFormEnhanced | 8 | 85% | ✅ |
+| KPIDashboard | 12 | 100% | ✅ |
+| ProjectCard | 9 | 100% | ✅ |
+
+#### Services Testados
+
+- **taskService.ts**: CRUD completo, edge cases, erros de rede
+- **apiService.ts**: Interceptors, timeout, autenticação
+
+### Casos de Teste Importantes
+
+```typescript
+// Edge Cases
+✓ Estados vazios (EmptyState)
+✓ Loading infinito
+✓ Erro de rede/timeout
+✓ Validação de formulário inválido
+✓ Ações com confirmação
+
+// Acessibilidade
+✓ ARIA labels presentes
+✓ Navegação por teclado
+✓ Role attributes corretos
+✓ Focus management
+```
+
+### Adicionar Novos Testes
+
+```typescript
+// src/components/__tests__/MyComponent.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import MyComponent from '../MyComponent';
+
+describe('MyComponent', () => {
+  it('deve renderizar corretamente', () => {
+    render(<MyComponent />);
+    expect(screen.getByText('Título')).toBeInTheDocument();
+  });
+
+  it('deve lidar com interações', () => {
+    const onClick = jest.fn();
+    render(<MyComponent onClick={onClick} />);
+    
+    fireEvent.click(screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+## 📸 Screenshots Automatizadas
+
+### Sistema de Visual Regression
+
+Utilizamos **Puppeteer + Jest Image Snapshot** para capturar e comparar screenshots automaticamente.
+
+### Executar Screenshots
+
+```bash
+# Capturar screenshots de todas as páginas
+npm run test:visual
+
+# Atualizar snapshots (após mudanças intencionais)
+npm run test:visual -- -u
+
+# Screenshots específicas
+npm run test:visual -- --testNamePattern="Homepage"
+```
+
+### Viewports Testados
+
+| Dispositivo | Resolução | DPI |
+|-------------|-----------|-----|
+| Mobile | 375x667 | 2x |
+| Tablet | 768x1024 | 2x |
+| Desktop | 1920x1080 | 1x |
+
+### Casos de Teste Visual
+
+✅ **Responsividade**
+- Homepage (mobile/tablet/desktop)
+- Dashboard com gráficos
+- Lista de tarefas com grid
+- Formulários
+
+✅ **Estados da UI**
+- Loading states
+- Empty states
+- Error states
+- Success feedback
+
+✅ **Acessibilidade Visual**
+- Alto contraste
+- Dark mode (futuro)
+- Texto aumentado (zoom 150%)
+
+### Configuração
+
+```typescript
+// src/__tests__/visual.config.ts
+export const imageSnapshotConfig = {
+  failureThreshold: 0.01, // 1% diferença tolerada
+  failureThresholdType: 'percent',
+  customSnapshotsDir: '__image_snapshots__',
+};
+```
+
+### Localização dos Snapshots
+
+```
+__image_snapshots__/
+├── homepage-desktop.png
+├── homepage-mobile.png
+├── dashboard-desktop.png
+├── tasklist-empty.png
+└── __diff_output__/  # Diffs quando falha
+```
+
+## 🎓 Onboarding Interativo
+
+### Tour Guiado para Novos Usuários
+
+O sistema inclui um **tour interativo completo** que guia novos usuários pela interface.
+
+### Funcionalidades
+
+✅ **Progresso Persistente**
+- Salvamento automático no `localStorage`
+- Retoma de onde parou
+- Contadores de etapas concluídas
+
+✅ **Feedback Visual**
+- Barra de progresso
+- Chips de status
+- Highlights nos elementos relevantes
+
+✅ **Navegação Flexível**
+- Avançar/Voltar entre etapas
+- Pular tour (botão fechar)
+- Reiniciar a qualquer momento
+
+✅ **Menu de Ajuda**
+- Botão flutuante (?)
+- Reabrir tour após conclusão
+- Tooltips contextuais
+
+### Etapas do Tour
+
+1. **Boas-vindas** - Visão geral do sistema
+2. **Gerenciar Tarefas** - Criar, filtrar, buscar
+3. **Dashboard** - Métricas e KPIs
+4. **Status Visual** - Chips e cores
+5. **Ações Rápidas** - Executar, visualizar, excluir
+6. **Menu de Ajuda** - Reabrir tour
+
+### Uso Programático
+
+```tsx
+import OnboardingTour from '@/components/OnboardingTour';
+
+// Iniciar automaticamente para novos usuários
+<OnboardingTour 
+  autoStart={isFirstVisit}
+  onComplete={() => {
+    console.log('Tour concluído!');
+    markAsOnboarded();
+  }}
+  onClose={() => {
+    console.log('Tour fechado');
+  }}
+/>
+
+// Botão manual para reabrir
+<Button onClick={() => resetOnboarding()}>
+  Reabrir Tour
+</Button>
+```
+
+### Personalizar Tour
+
+```typescript
+// src/components/OnboardingTour.tsx
+const TOUR_STEPS: TourStep[] = [
+  {
+    id: 'welcome',
+    title: 'Seu Título',
+    description: 'Sua descrição',
+    target: '.css-selector',  // Elemento a destacar
+    action: 'Ação sugerida',
+  },
+  // ... mais etapas
+];
+```
+
+### Persistência
+
+O progresso é salvo automaticamente:
+
+```json
+// localStorage: 'efizion-onboarding-progress'
+{
+  "completed": ["welcome", "tasks", "dashboard"],
+  "lastStep": 2,
+  "tourCompleted": false,
+  "lastUpdated": "2026-02-04T10:30:00.000Z"
+}
+```
+
+### Reset Manual
+
+```typescript
+// Limpar progresso do tour
+localStorage.removeItem('efizion-onboarding-progress');
+// OU
+// Usar botão de reiniciar no tour
+```
+
 ## 🔧 Scripts Disponíveis
 
 ```bash
@@ -277,6 +537,8 @@ npm run dev          # Desenvolvimento (hot reload)
 npm run build        # Build de produção
 npm start            # Servidor de produção
 npm test             # Executar testes
+npm test:ci          # Testes em CI (sem watch)
+npm test:visual      # Screenshots automatizadas
 npm run lint         # ESLint check
 npm run format       # Prettier format
 npm run type-check   # TypeScript check

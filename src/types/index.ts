@@ -11,8 +11,8 @@ export type TaskStatus = 'pending' | 'running' | 'done' | 'error';
  * Interface principal de uma Tarefa
  */
 export interface Task {
-  /** ID único da tarefa */
-  id: number;
+  /** ID único da tarefa (string ou number) */
+  id: string | number;
   /** Título da tarefa */
   title: string;
   /** Nome legado (compatibilidade) */
