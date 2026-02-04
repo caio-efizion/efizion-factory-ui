@@ -86,8 +86,9 @@ export const TaskListEnhanced: React.FC = () => {
     setFilteredTasks(result);
   }, [searchQuery, statusFilter, tasks]);
 
-  const handleDeleteClick = (taskId: number) => {
-    setTaskToDelete(taskId);
+  const handleDeleteClick = (taskId: string | number) => {
+    const id = typeof taskId === 'string' ? parseInt(taskId, 10) : taskId;
+    setTaskToDelete(id);
     setDeleteDialogOpen(true);
   };
 

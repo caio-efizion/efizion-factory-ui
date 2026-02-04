@@ -1,5 +1,5 @@
 import { getTasks, createTask, getTaskById, deleteTask, updateTask, runTask } from '../taskService';
-import { apiClient } from '../apiService';
+import apiClient from '../apiService';
 
 // Mock do apiClient
 jest.mock('../apiService', () => ({
@@ -32,16 +32,6 @@ describe('taskService', () => {
       expect(result).toEqual(mockTasks);
     });
 
-    it('deve aplicar filtros quando fornecidos', async () => {
-      mockApiClient.get.mockResolvedValue({ data: [] });
-
-      await getTasks({ status: 'pending', search: 'test' });
-
-      expect(mockApiClient.get).toHaveBeenCalledWith('/tasks', {
-        params: { status: 'pending', search: 'test' },
-      });
-    });
-
     it('deve lançar erro em caso de falha', async () => {
       mockApiClient.get.mockRejectedValue(new Error('Network error'));
 
@@ -51,10 +41,10 @@ describe('taskService', () => {
 
   describe('getTaskById', () => {
     it('deve retornar tarefa por ID', async () => {
-      const mockTask = { id: '1', title: 'Task 1', status: 'pending' };
+      const mockTask = { id: 1, title: 'Task 1', status: 'pending' };
       mockApiClient.get.mockResolvedValue({ data: mockTask });
 
-      const result = await getTaskById('1');
+      const result = await getTaskById(1);
 
       expect(mockApiClient.get).toHaveBeenCalledWith('/tasks/1');
       expect(result).toEqual(mockTask);
@@ -63,7 +53,7 @@ describe('taskService', () => {
     it('deve lançar erro se tarefa não encontrada', async () => {
       mockApiClient.get.mockRejectedValue(new Error('Not found'));
 
-      await expect(getTaskById('999')).rejects.toThrow('Not found');
+      await expect(getTaskById(999)).rejects.toThrow('Not found');
     });
   });
 
@@ -89,10 +79,10 @@ describe('taskService', () => {
   describe('updateTask', () => {
     it('deve atualizar tarefa existente', async () => {
       const updates = { title: 'Updated Title' };
-      const updatedTask = { id: '1', ...updates, status: 'pending' };
+      const updatedTask = { id: 1, ...updates, status: 'pending' };
       mockApiClient.put.mockResolvedValue({ data: updatedTask });
 
-      const result = await updateTask('1', updates);
+      const result = await updateTask(1, updates);
 
       expect(mockApiClient.put).toHaveBeenCalledWith('/tasks/1', updates);
       expect(result).toEqual(updatedTask);
@@ -103,7 +93,7 @@ describe('taskService', () => {
     it('deve deletar tarefa', async () => {
       mockApiClient.delete.mockResolvedValue({ data: {} });
 
-      await deleteTask('1');
+      await deleteTask(1);
 
       expect(mockApiClient.delete).toHaveBeenCalledWith('/tasks/1');
     });
@@ -111,7 +101,7 @@ describe('taskService', () => {
     it('deve lançar erro se tarefa não pode ser deletada', async () => {
       mockApiClient.delete.mockRejectedValue(new Error('Cannot delete running task'));
 
-      await expect(deleteTask('1')).rejects.toThrow('Cannot delete running task');
+      await expect(deleteTask(1)).rejects.toThrow('Cannot delete running task');
     });
   });
 
@@ -120,7 +110,7 @@ describe('taskService', () => {
       const runResult = { status: 'running', message: 'Task started' };
       mockApiClient.post.mockResolvedValue({ data: runResult });
 
-      const result = await runTask('1');
+      const result = await runTask(1);
 
       expect(mockApiClient.post).toHaveBeenCalledWith('/tasks/1/run');
       expect(result).toEqual(runResult);

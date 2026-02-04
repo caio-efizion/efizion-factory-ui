@@ -284,9 +284,12 @@ describe('Visual Regression Tests', () => {
       if (titleInput) {
         await titleInput.focus();
         await titleInput.type('Ab'); // Título muito curto
-        await titleInput.blur();
+        await page.evaluate(() => {
+          const input = document.querySelector('input[name="title"]') as HTMLInputElement;
+          if (input) input.blur();
+        });
         
-        await page.waitForTimeout(500);
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         const screenshot = await page.screenshot({ fullPage: true });
         expect(screenshot).toMatchImageSnapshot({
@@ -320,7 +323,7 @@ describe('Visual Regression Tests', () => {
       
       if (searchInput) {
         await searchInput.type('deploy');
-        await page.waitForTimeout(500);
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         const screenshot = await page.screenshot({ fullPage: true });
         expect(screenshot).toMatchImageSnapshot({
@@ -339,7 +342,7 @@ describe('Visual Regression Tests', () => {
       
       if (filterButton) {
         await filterButton.click();
-        await page.waitForTimeout(500);
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         const screenshot = await page.screenshot({ fullPage: true });
         expect(screenshot).toMatchImageSnapshot({
@@ -358,7 +361,7 @@ describe('Visual Regression Tests', () => {
       
       if (taskCard) {
         await taskCard.click();
-        await page.waitForTimeout(1000);
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         const screenshot = await page.screenshot({ fullPage: true });
         expect(screenshot).toMatchImageSnapshot({
@@ -404,7 +407,7 @@ describe('Visual Regression Tests', () => {
         window.dispatchEvent(event);
       });
       
-      await page.waitForTimeout(500);
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const screenshot = await page.screenshot();
       expect(screenshot).toMatchImageSnapshot({
@@ -424,7 +427,7 @@ describe('Visual Regression Tests', () => {
     it('deve capturar homepage em dark mode', async () => {
       await page.setViewport(VIEWPORTS.desktop);
       await page.goto(baseURL, { waitUntil: 'networkidle0' });
-      await page.waitForTimeout(500);
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const screenshot = await page.screenshot({ fullPage: true });
       expect(screenshot).toMatchImageSnapshot({
@@ -436,7 +439,7 @@ describe('Visual Regression Tests', () => {
     it('deve capturar dashboard em dark mode', async () => {
       await page.setViewport(VIEWPORTS.desktop);
       await page.goto(`${baseURL}/dashboard`, { waitUntil: 'networkidle0' });
-      await page.waitForTimeout(500);
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const screenshot = await page.screenshot({ fullPage: true });
       expect(screenshot).toMatchImageSnapshot({
@@ -448,7 +451,7 @@ describe('Visual Regression Tests', () => {
     it('deve capturar formulário em dark mode', async () => {
       await page.setViewport(VIEWPORTS.desktop);
       await page.goto(baseURL);
-      await page.waitForTimeout(500);
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const screenshot = await page.screenshot({ fullPage: true });
       expect(screenshot).toMatchImageSnapshot({
@@ -468,7 +471,7 @@ describe('Visual Regression Tests', () => {
     it('deve capturar homepage em light mode', async () => {
       await page.setViewport(VIEWPORTS.desktop);
       await page.goto(baseURL, { waitUntil: 'networkidle0' });
-      await page.waitForTimeout(500);
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const screenshot = await page.screenshot({ fullPage: true });
       expect(screenshot).toMatchImageSnapshot({
@@ -482,7 +485,7 @@ describe('Visual Regression Tests', () => {
       await page.goto(baseURL);
       
       await page.waitForSelector('[data-testid="kpi-card"]', { timeout: 5000 }).catch(() => {});
-      await page.waitForTimeout(500);
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const screenshot = await page.screenshot();
       expect(screenshot).toMatchImageSnapshot({
