@@ -12,7 +12,8 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
-    "test:visual": "jest --testPathPattern=visual.test.ts --runInBand"
+    "test:visual": "jest --testPathPattern=visual.test.ts --runInBand",
+    "smoke": "./smoke.sh"
   },
   "license": "MIT",
   "dependencies": {
