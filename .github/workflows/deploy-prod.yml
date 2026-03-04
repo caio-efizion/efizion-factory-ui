@@ -49,6 +49,9 @@ jobs:
           echo "prod_host=$PROD_HOST" >> "$GITHUB_OUTPUT"
           echo "container=$CONTAINER" >> "$GITHUB_OUTPUT"
           echo "smoke_path=/" >> "$GITHUB_OUTPUT"
+          echo "caddyfile_path=/root/caddy/Caddyfile" >> "$GITHUB_OUTPUT"
+          echo "caddy_container=caddy" >> "$GITHUB_OUTPUT"
+          echo "caddy_network=projeto-demo_efizion-net" >> "$GITHUB_OUTPUT"
 
       - name: Deploy or cleanup production
         id: deploy
@@ -59,6 +62,11 @@ jobs:
           PROD_HOST="${{ steps.vars.outputs.prod_host }}"
           CONTAINER="${{ steps.vars.outputs.container }}"
           SMOKE_PATH="${{ steps.vars.outputs.smoke_path }}"
+          CADDYFILE_PATH="${{ steps.vars.outputs.caddyfile_path }}"
+          CADDY_CONTAINER="${{ steps.vars.outputs.caddy_container }}"
+          CADDY_NETWORK="${{ steps.vars.outputs.caddy_network }}"
+          BEGIN_MARKER="# BEGIN EFIZION PROD UI"
+          END_MARKER="# END EFIZION PROD UI"
 
           mkdir -p "$PROD_DIR"
 
@@ -90,27 +98,24 @@ jobs:
             cp "$PROD_DIR/docker-compose.yml" "$PROD_DIR/docker-compose.yml.backup-$(date +%s)"
           fi
 
-          if [ ! -f "$PROD_DIR/docker-compose.yml" ]; then
-            {
-              echo "services:"
-              echo "  ui:"
-              echo "    build:"
-              echo "      context: ./src"
-              echo "    container_name: ${CONTAINER}"
-              echo "    restart: unless-stopped"
-              echo "    ports:"
-              echo "      - \"127.0.0.1:3000:3000\""
-              echo "    networks:"
-              echo "      - projeto-demo_efizion-net"
-              echo ""
-              echo "networks:"
-              echo "  projeto-demo_efizion-net:"
-              echo "    external: true"
-            } > "$PROD_DIR/docker-compose.yml"
-          fi
+          {
+            echo "services:"
+            echo "  ui:"
+            echo "    build:"
+            echo "      context: ./src"
+            echo "    container_name: ${CONTAINER}"
+            echo "    restart: unless-stopped"
+            echo "    networks:"
+            echo "      - ${CADDY_NETWORK}"
+            echo ""
+            echo "networks:"
+            echo "  ${CADDY_NETWORK}:"
+            echo "    external: true"
+          } > "$PROD_DIR/docker-compose.yml"
 
           cd "$PROD_DIR"
           echo "=== Starting production containers ==="
+          docker compose down --remove-orphans || true
           docker compose up -d --build
 
           echo "=== Waiting 15s for app to be ready ==="
@@ -135,21 +140,44 @@ jobs:
             exit 1
           fi
 
-          echo "=== External smoke test ==="
-          EXTERNAL_OK=0
-          for i in {1..20}; do
-            echo "External attempt $i/20..."
-            if curl -f -s "https://${PROD_HOST}${SMOKE_PATH}" > /tmp/prod_ui_external.html 2>&1; then
-              EXTERNAL_OK=1
+          echo "=== Configure Caddy route ==="
+          awk -v b="$BEGIN_MARKER" -v e="$END_MARKER" '
+            $0==b {skip=1; next}
+            $0==e {skip=0; next}
+            skip!=1 {print}
+          ' "$CADDYFILE_PATH" > "${CADDYFILE_PATH}.tmp"
+          mv "${CADDYFILE_PATH}.tmp" "$CADDYFILE_PATH"
+
+          {
+            echo ""
+            echo "${BEGIN_MARKER}"
+            echo "${PROD_HOST} {"
+            echo "    reverse_proxy ${CONTAINER}:3000"
+            echo "}"
+            echo "${END_MARKER}"
+          } >> "$CADDYFILE_PATH"
+
+          docker exec "$CADDY_CONTAINER" caddy validate --config /etc/caddy/Caddyfile
+          docker exec "$CADDY_CONTAINER" caddy reload --config /etc/caddy/Caddyfile
+
+          echo "=== Caddy route smoke test (local host header) ==="
+          CADDY_OK=0
+          HTTP_STATUS="000"
+          for i in {1..30}; do
+            echo "Caddy attempt $i/30..."
+            HTTP_STATUS="$(curl -sS -o /tmp/prod_ui_caddy.html -w '%{http_code}' -H "Host: ${PROD_HOST}" http://127.0.0.1${SMOKE_PATH} || true)"
+            if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "301" ] || [ "$HTTP_STATUS" = "302" ] || [ "$HTTP_STATUS" = "307" ] || [ "$HTTP_STATUS" = "308" ]; then
+              CADDY_OK=1
               break
             fi
-            sleep 3
+            sleep 2
           done
 
-          if [ "$EXTERNAL_OK" -ne 1 ]; then
-            echo "=== External smoke failed ==="
+          if [ "$CADDY_OK" -ne 1 ]; then
+            echo "=== Caddy smoke failed ==="
+            docker logs "$CADDY_CONTAINER" --tail 100 || true
             docker logs "$CONTAINER" --tail 100 || true
-            echo "status=failed:external" >> "$GITHUB_OUTPUT"
+            echo "status=failed:caddy_http_${HTTP_STATUS}" >> "$GITHUB_OUTPUT"
             exit 1
           fi
 
