@@ -123,6 +123,10 @@ jobs:
           git fetch --all --prune
           git checkout --force "$PR_SHA"
 
+          if [ ! -d "${APP_DIR}/src/public" ]; then
+            mkdir -p "${APP_DIR}/src/public"
+          fi
+
           {
             echo "services:"
             echo "  ui:"
